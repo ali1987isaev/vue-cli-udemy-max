@@ -3,6 +3,7 @@
     <header>
       <h1>My friends</h1>
     </header>
+    <new-friend @add-friend="addNewFriend"></new-friend>
     <ul>
       <friend-contact
         v-for="friend in friends"
@@ -13,8 +14,16 @@
         :phone="friend.phone"
         :is-favorit="friend.favorit"
         @toggle-favorite="toggleFavoriteStatus"
+        @delete-contact="deleteContact"
       ></friend-contact>
     </ul>
+  </section>
+  <section>
+    <div class="custom-header">
+      <h1>active user</h1>
+    </div>
+    <user-data @set-custom-user="setCustomUser"></user-data>
+    <active-user v-if="activeUser.name !== '' && activeUser.age !== ''" :activeUser="activeUser"></active-user>
   </section>
 </template>
 
@@ -44,13 +53,27 @@
             email: 'mikelklandy@gmail.com',
             favorit: false,
           }
-        ]
+        ],
+        activeUser: {
+          name: '',
+          age: '',
+        }
       }
     },
     methods: {
       toggleFavoriteStatus(id) {
         const indentifiedFriend = this.friends.find(friend => friend.id === id);
         indentifiedFriend.favorit = !indentifiedFriend.favorit;
+      },
+      addNewFriend(obj) {
+        this.friends = [...this.friends, obj];
+      },
+      deleteContact(friendId) {
+        this.friends = this.friends.filter(friend => friend.id !== friendId);
+      },
+      setCustomUser(newUserName, newUserAge) {
+        this.activeUser.name = newUserName;
+        this.activeUser.age = newUserAge;
       }
     }
   }
@@ -71,7 +94,8 @@
     margin: 0;
   }
 
-  header {
+  header,
+  .custom-header {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
     margin: 3rem auto;
     border-radius: 10px;
@@ -89,7 +113,9 @@
     list-style: none;
   }
 
-  #app li {
+  #app li,
+  #app form,
+  .container {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
     margin: 1rem auto;
     border-radius: 10px;
